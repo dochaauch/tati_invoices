@@ -4,6 +4,7 @@ import pandas as pd
 from textwrap import wrap
 import re
 from sys import argv
+import conf
 
 def check_if_not_nan(str_):
     if not pd.isna(str_):
@@ -28,7 +29,8 @@ def del_empty_line(str_):
             return s
 
 
-your_target_folder = rf'C:\Users\docha\OneDrive\Leka'
+#your_target_folder = rf'C:\Users\docha\OneDrive\Leka'
+your_target_folder = conf.your_target_folder
 my_file = rf'{your_target_folder}\Union Salary\salary_template.xlsx'
 my_check = rf'{your_target_folder}\Union Salary\konto_check.xlsx'
 company_name = 'UNIONCOMPANY OÜ'
