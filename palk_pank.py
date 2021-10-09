@@ -37,6 +37,7 @@ company_name = 'UNIONCOMPANY OÜ'
 our_iban = 'EE102200221076946964'
 our_bic = 'HABAEE2X'
 our_reg_nr = '16239200'
+
 #данные из bat файла
 date_of_payment = str(argv[1])
 month_of_calc = str(argv[2])
@@ -105,8 +106,10 @@ for index, row in df.iterrows():
     another_name = re.compile(r'.*\((.*)\)')
     if another_name.search(row['Name']):
         owner = another_name.search(row['Name']).group(1).strip()
+        person = row['Name'].split('(')[0] + ' '
     else:
         owner = row['Name'].strip()
+        person = ''
 
     # address of worker, county of residence
     country_adr = ''
@@ -198,7 +201,7 @@ for index, row in df.iterrows():
 </Id>
 </CdtrAcct>
 <RmtInf>
-<Ustrd>{month_of_calc}: palk {row['Scht']:.2f} + komandeeringuraha {row['Kom']:.2f}</Ustrd>
+<Ustrd>{month_of_calc}: {person}palk {row['Scht']:.2f} + komandeeringuraha {row['Kom']:.2f}</Ustrd>
 </RmtInf>
 </CdtTrfTxInf>
 </PmtInf>'''
