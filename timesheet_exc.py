@@ -6,29 +6,31 @@ import re
 from openpyxl.comments import Comment
 
 
-fs_file = r'C:\Users\docha\OneDrive\Leka\PSB Finstratum\September\FINSTRATUM FS 09.xls'
-stma_file = r'C:\Users\docha\OneDrive\Leka\PSB Finstratum\September\FINSTRATUM  STEMA 09.xls'
+fs_file = r'C:\Users\docha\OneDrive\Leka\PSB Finstratum\September\FINSTRATUM FS 09.xlsx'
+stma_file = r'C:\Users\docha\OneDrive\Leka\PSB Finstratum\September\FINSTRATUM  STEMA 09.xlsx'
 rmtp_file = r'C:\Users\docha\OneDrive\Leka\PSB Finstratum\September\rmtp  September 2021a.xlsx'
 
 
 def read_hours(file):
-    ttl_hour_book = xlrd.open_workbook(filename=file)
+    ttl_hour_book = openpyxl.load_workbook(filename=file, data_only=True)
     ttl_hours = dict()
-    sh = ttl_hour_book.sheet_by_index(0)
-    head_row = 4
+    sh_name = ttl_hour_book.sheetnames[0]
+    sh = ttl_hour_book[sh_name]
+    head_row = 5
     first_col_week = 43
     last_col_week = 47
     print(os.path.basename(file))
-    pprint.pprint(sh.row_values(head_row)[first_col_week - 1: last_col_week + 2])
-    for rx in range(head_row + 1, sh.nrows):
-        fs_name = sh.row(rx)[0]
-        if len(fs_name.value.split()) >= 2:
-            range_hours = sh.row(rx)[first_col_week: last_col_week + 1]
-            if fs_name.value:
-                list_hours = []
-                for l_ in range_hours:
-                    list_hours.append(l_.value)
-                ttl_hours[fs_name.value.strip()] = list_hours
+    pprint.pprint(list(cell.value for cell in sh[head_row][first_col_week - 1: last_col_week + 2]))
+    for rx in range(head_row + 1, sh.max_row):
+        fs_name = sh[rx][0]
+        if fs_name.value:
+            if len(fs_name.value.split()) >= 2:
+                range_hours = sh[rx][first_col_week: last_col_week + 1]
+                if fs_name.value:
+                    list_hours = []
+                    for l_ in range_hours:
+                        list_hours.append(l_.value)
+                    ttl_hours[fs_name.value.strip()] = list_hours
     return ttl_hours
 
 
