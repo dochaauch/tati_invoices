@@ -43,8 +43,8 @@ def write_hours(ttl_hours, column_first_week):
         if row[0].value is None:
             pass
         else:
-            for i in range(5):
-                r = re.compile('^[a-zA-Z ]*$') # строка содержит только буквы и пробелы
+            for i in range(5): #количество столбцов с неделями
+                r = re.compile('^[a-zA-Z ]*$')  # паттерн для имени, строка содержит только буквы и пробелы
                 if len(rmtp_name.value.split()) == 2 and r.match(rmtp_name.value):
                     if rmtp_name.value.strip() in ttl_hours.keys():
                         fs_time = ttl_hours.get(rmtp_name.value.strip())
