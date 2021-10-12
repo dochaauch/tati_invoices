@@ -56,7 +56,6 @@ def processing_comments(cell, comm, stema_time_i, stema_name):
                 cell.fill = openpyxl.styles.PatternFill(start_color='FFC7CE', fill_type="solid")
 
 
-
 def write_hours_to_summary(week_hours, column_day):
     stema_book = openpyxl.load_workbook(filename=stema_file)
     stema_sh = stema_book['лист']

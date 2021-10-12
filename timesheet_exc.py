@@ -34,13 +34,25 @@ def read_hours(file):
     return ttl_hours
 
 
+def processing_comments(cell, comm, fs_time_i, rmtp_name):
+    if cell.value:
+        if cell.value != fs_time_i and not (cell.value is None or cell.value == 0):
+            if comm:  # если у ячейки уже был комментарий
+                comm = Comment(f'{comm.text}, было: {cell.value}, стало: {fs_time_i}', 'TJ')
+            else:  # если комментов не было, но предыдущее значение ячейки не 0 и не None
+                comm = Comment(f'было: {cell.value}, стало: {fs_time_i}', 'TJ')
+                print(rmtp_name.value, cell.coordinate, comm.text)
+                cell.comment = comm
+                cell.fill = openpyxl.styles.PatternFill(start_color='FFC7CE', fill_type="solid")
+
+
 def write_hours(ttl_hours, column_first_week):
     rmtp_book = openpyxl.load_workbook(filename=rmtp_file)
     rmtp_sh = rmtp_book['Evikit']
     rmtp_list_wrk = []
     for row in rmtp_sh.rows:
         rmtp_name = row[0]
-        if row[0].value is None:
+        if rmtp_name.value is None:
             pass
         else:
             for i in range(5): #количество столбцов с неделями
@@ -50,14 +62,7 @@ def write_hours(ttl_hours, column_first_week):
                         fs_time = ttl_hours.get(rmtp_name.value.strip())
                         cell = rmtp_sh.cell(row=rmtp_name.row, column=column_first_week + i * 2)
                         comm = cell.comment
-                        if cell.value != fs_time[i] and not (cell.value is None or cell.value == 0):
-                            if comm:  # если у ячейки уже был комментарий
-                                comm = Comment(f'{comm.text}, было: {cell.value}, стало: {fs_time[i]}', 'TJ')
-                            else:  # если комментов не было, но предыдущее значение ячейки не 0 и не None
-                                comm = Comment(f'было: {cell.value}, стало: {fs_time[i]}', 'TJ')
-                                print(rmtp_name.value, cell.coordinate, comm.text)
-                                cell.comment = comm
-                                cell.fill = openpyxl.styles.PatternFill(start_color='FFC7CE', fill_type="solid")
+                        processing_comments(cell, comm, fs_time[i], rmtp_name)
                         cell.value = fs_time[i]
                         cell.number_format = '0.0'
                         rmtp_list_wrk.append(rmtp_name.value.strip())  # добавляем в список обработанного сотрудника
