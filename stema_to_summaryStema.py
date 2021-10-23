@@ -4,9 +4,34 @@ import os
 import pprint
 import re
 from openpyxl.comments import Comment
+import hours_config
 
-target_folder = r'C:\Users\docha\OneDrive\Leka\PSB Finstratum\September'
-stema_file = r'C:\Users\docha\OneDrive\Leka\PSB Finstratum\September\FINSTRATUM  STEMA 09.xlsx'
+
+target_folder = hours_config.your_target_folder
+
+
+def define_of_files(your_target_folder):
+    for dirpath, _, filenames in os.walk(your_target_folder):
+        fs_file_ = re.compile(r'.*(FS).*')
+        stma_file_ = re.compile(r'.*(STEMA).*')
+        rmtp_file_ = re.compile(r'^(rmtp).*')
+        for items in filenames:
+            if items.lower().endswith('.xlsx'):
+                fs_file__ = fs_file_.match(items)
+                if fs_file__:
+                    fs_file = fr'{your_target_folder}/{fs_file__[0]}'
+
+                stma_file__ = stma_file_.match(items)
+                if stma_file__:
+                    stma_file = fr'{your_target_folder}/{stma_file__[0]}'
+
+                rmtp_file__ = rmtp_file_.match(items)
+                if rmtp_file__:
+                    rmtp_file = fr'{your_target_folder}/{rmtp_file__[0]}'
+    return fs_file, stma_file, rmtp_file
+
+
+fs_file, stema_file, rmtp_file = define_of_files(target_folder)
 
 
 def list_of_files(your_target_folder):
@@ -58,7 +83,8 @@ def processing_comments(cell, comm, stema_time_i, stema_name):
 
 def write_hours_to_summary(week_hours, column_day):
     stema_book = openpyxl.load_workbook(filename=stema_file)
-    stema_sh = stema_book['лист']
+    stema_sheets = stema_book.sheetnames[0]
+    stema_sh = stema_book[stema_sheets]
     stema_list_wrk = []
     words = ['Total h', 'Extra h']
     chk_pat = '(?:{})'.format('|'.join(words))
@@ -68,7 +94,7 @@ def write_hours_to_summary(week_hours, column_day):
             pass
         else:
             r = re.compile('^[a-zA-Z ]*$')  # паттерн для имени, строка содержит только буквы и пробелы
-            if (len(stema_name.value.split()) == 2 and r.match(stema_name.value)
+            if (len(stema_name.value.split()) >= 2 and r.match(stema_name.value)
                     and not bool(re.search(chk_pat, stema_name.value, flags=re.I))):
                 if stema_name.value.strip() in week_hours.keys():
                     stema_time = week_hours.get(stema_name.value.strip())

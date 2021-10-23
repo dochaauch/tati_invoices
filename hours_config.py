@@ -1,0 +1,1 @@
+your_target_folder = r'C:\Users\docha\OneDrive\Leka\PSB Finstratum\Oktoober'

@@ -1,14 +1,43 @@
-import xlrd
 import pprint
 import os
 import openpyxl
 import re
 from openpyxl.comments import Comment
+from win32com.client import Dispatch
+#python -m pip install pywin32
+import hours_config
 
 
-fs_file = r'C:\Users\docha\OneDrive\Leka\PSB Finstratum\September\FINSTRATUM FS 09.xlsx'
-stma_file = r'C:\Users\docha\OneDrive\Leka\PSB Finstratum\September\FINSTRATUM  STEMA 09.xlsx'
-rmtp_file = r'C:\Users\docha\OneDrive\Leka\PSB Finstratum\September\rmtp  September 2021a.xlsx'
+your_target_folder = hours_config.your_target_folder
+
+
+def just_open(filename):
+    xlApp = Dispatch('Excel.Application')
+    xlApp.Visible = False
+    xlBook = xlApp.Workbooks.Open(filename)
+    xlBook.Save()
+    xlBook.Close()
+
+
+def define_of_files(your_target_folder):
+    for dirpath, _, filenames in os.walk(your_target_folder):
+        fs_file_ = re.compile(r'.*(FS).*')
+        stma_file_ = re.compile(r'.*(STEMA).*')
+        rmtp_file_ = re.compile(r'^(rmtp).*')
+        for items in filenames:
+            if items.lower().endswith('.xlsx'):
+                fs_file__ = fs_file_.match(items)
+                if fs_file__:
+                    fs_file = fr'{your_target_folder}/{fs_file__[0]}'
+
+                stma_file__ = stma_file_.match(items)
+                if stma_file__:
+                    stma_file = fr'{your_target_folder}/{stma_file__[0]}'
+
+                rmtp_file__ = rmtp_file_.match(items)
+                if rmtp_file__:
+                    rmtp_file = fr'{your_target_folder}/{rmtp_file__[0]}'
+    return fs_file, stma_file, rmtp_file
 
 
 def read_hours(file):
@@ -46,18 +75,25 @@ def processing_comments(cell, comm, fs_time_i, rmtp_name):
                 cell.fill = openpyxl.styles.PatternFill(start_color='FFC7CE', fill_type="solid")
 
 
-def write_hours(ttl_hours, column_first_week):
+def write_hours(ttl_hours, column_first_week, rmtp_file):
     rmtp_book = openpyxl.load_workbook(filename=rmtp_file)
+    rmtp_file_new = fr'{os.path.dirname(rmtp_file)}/upd_{os.path.basename(rmtp_file).split(".")[0]}.xlsx        '
     rmtp_sh = rmtp_book['Evikit']
     rmtp_list_wrk = []
+    week_hours = list()
+
     for row in rmtp_sh.rows:
+
+    #for row in rmtp_sh.iter_rows(min_row=3, min_col=1, max_row=rmtp_sh.max_row+1, max_col=rmtp_sh.max_column+1):
         rmtp_name = row[0]
+
         if rmtp_name.value is None:
             pass
         else:
+
             for i in range(5): #количество столбцов с неделями
                 r = re.compile('^[a-zA-Z ]*$')  # паттерн для имени, строка содержит только буквы и пробелы
-                if len(rmtp_name.value.split()) == 2 and r.match(rmtp_name.value):
+                if len(rmtp_name.value.split()) >= 2 and r.match(rmtp_name.value):
                     if rmtp_name.value.strip() in ttl_hours.keys():
                         fs_time = ttl_hours.get(rmtp_name.value.strip())
                         cell = rmtp_sh.cell(row=rmtp_name.row, column=column_first_week + i * 2)
@@ -66,6 +102,8 @@ def write_hours(ttl_hours, column_first_week):
                         cell.value = fs_time[i]
                         cell.number_format = '0.0'
                         rmtp_list_wrk.append(rmtp_name.value.strip())  # добавляем в список обработанного сотрудника
+                        week_hours.append(cell.value)
+    print('Занесено часов:', sum(week_hours))
     print('Всего занесено в таблицу сотрудников:', len(set(rmtp_list_wrk)))
     for k, v in ttl_hours.items():
         if k not in set(rmtp_list_wrk):
@@ -74,12 +112,18 @@ def write_hours(ttl_hours, column_first_week):
 
 
 def main():
+    fs_file, stma_file, rmtp_file = define_of_files(your_target_folder)
+    just_open(fs_file)
+    just_open(stma_file)
     fs_hours = read_hours(fs_file)
+    #pprint.pprint(fs_hours)
     st_hours = read_hours(stma_file)
+    #pprint.pprint(st_hours)
     print('***часы FS***')
-    write_hours(fs_hours, 5)
+    write_hours(fs_hours, 5, rmtp_file)
+
     print('***часы STEMA***')
-    write_hours(st_hours, 4)
+    write_hours(st_hours, 4, rmtp_file)
 
 
 if __name__ == "__main__":
