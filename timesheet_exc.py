@@ -83,8 +83,6 @@ def write_hours(ttl_hours, column_first_week, rmtp_file):
     week_hours = list()
 
     for row in rmtp_sh.rows:
-
-    #for row in rmtp_sh.iter_rows(min_row=3, min_col=1, max_row=rmtp_sh.max_row+1, max_col=rmtp_sh.max_column+1):
         rmtp_name = row[0]
 
         if rmtp_name.value is None:

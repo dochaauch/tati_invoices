@@ -5,6 +5,7 @@ from textwrap import wrap
 import re
 from sys import argv
 import conf
+from datetime import date, timedelta
 
 def check_if_not_nan(str_):
     if not pd.isna(str_):
@@ -29,7 +30,6 @@ def del_empty_line(str_):
             return s
 
 
-#your_target_folder = rf'C:\Users\docha\OneDrive\Leka'
 your_target_folder = conf.your_target_folder
 my_file = rf'{your_target_folder}\Union Salary\salary_template.xlsx'
 my_check = rf'{your_target_folder}\Union Salary\konto_check.xlsx'
@@ -39,8 +39,14 @@ our_bic = 'HABAEE2X'
 our_reg_nr = '16239200'
 
 #данные из bat файла
-date_of_payment = str(argv[1])
-month_of_calc = str(argv[2])
+#date_of_payment = str(argv[1])
+#month_of_calc = str(argv[2])
+
+date_of_payment = date.today().strftime("%Y-%m-%d")
+month_of_calc = (date.today().replace(day=1) - datetime.timedelta(days=1)).strftime("%b%y")
+
+print('дата платежа:', date_of_payment)
+print('месяц зарплаты и командировок (предыдущий месяц от даты платежа:', month_of_calc)
 
 #читаем эксель с данными
 df = pd.read_excel(my_file)
@@ -77,7 +83,8 @@ if len(false_df) > 0:
 df_not_in_base = df[~df.Name.isin(df_check.Name)]
 if len(df_not_in_base) > 0:
     print()
-    print('Работника нет в контрольной базе', df_not_in_base.Name)
+    print('Работника нет в контрольной базе')
+    print(df_not_in_base.Name)
 
 d_now = datetime.datetime.now()
 d_00 = d_now.strftime('%d.%m.%y')
