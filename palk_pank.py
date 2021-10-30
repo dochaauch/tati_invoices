@@ -6,6 +6,8 @@ import re
 from sys import argv
 import conf
 from datetime import date, timedelta
+from pyautogui import typewrite
+
 
 def check_if_not_nan(str_):
     if not pd.isna(str_):
@@ -43,10 +45,22 @@ our_reg_nr = '16239200'
 #month_of_calc = str(argv[2])
 
 date_of_payment = date.today().strftime("%Y-%m-%d")
-month_of_calc = (date.today().replace(day=1) - datetime.timedelta(days=1)).strftime("%b%y")
+month_of_calc = (date.today().replace(day=1) - datetime.timedelta(days=1)).strftime("%b%y").upper()
+
+#print("enter folder name: ")
+#typewrite("Default Value")
+#folder = input()
+
+print('дата платежа:')
+typewrite(date_of_payment)
+date_of_payment = input()
+
+print('месяц зарплаты и командировок (предыдущий месяц от даты платежа):')
+typewrite(month_of_calc)
+month_of_calc = input()
 
 print('дата платежа:', date_of_payment)
-print('месяц зарплаты и командировок (предыдущий месяц от даты платежа:', month_of_calc)
+print('месяц зарплаты и командировок (предыдущий месяц от даты платежа):', month_of_calc)
 
 #читаем эксель с данными
 df = pd.read_excel(my_file)
