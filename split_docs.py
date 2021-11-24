@@ -27,6 +27,7 @@ folder_text = ''
 for files_address in pdf_files:
     nr_of_doc = 'notext'
     inv_ship_name = ''
+    print(files_address)
     pdfFileObj = open(files_address, 'rb')
     pdfReader = PyPDF2.PdfFileReader(pdfFileObj, strict=False)
 
