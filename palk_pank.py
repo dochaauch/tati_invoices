@@ -32,7 +32,13 @@ def del_empty_line(str_):
             return s
 
 
-your_target_folder = conf_pank.your_target_folder
+print('docha (d), tati (нажать любую клавишу):')
+who = input()
+if who == 'd':
+    your_target_folder = conf_pank.your_target_folder_docha
+else:
+    your_target_folder = conf_pank.your_target_folder
+
 my_file = rf'{your_target_folder}\Union Salary\salary_template.xlsx'
 my_check = rf'{your_target_folder}\Union Salary\konto_check.xlsx'
 company_name = 'UNIONCOMPANY OÜ'

@@ -8,7 +8,13 @@ from win32com.client import Dispatch
 import hours_config
 
 
-your_target_folder = hours_config.your_target_folder
+print('docha (d), tati (нажать любую клавишу):')
+who = input()
+if who == 'd':
+    your_target_folder = hours_config.your_target_folder_docha
+else:
+    your_target_folder = hours_config.your_target_folder
+
 
 
 def just_open(filename):

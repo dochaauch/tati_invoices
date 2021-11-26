@@ -5,7 +5,12 @@ import re
 import conf
 
 
-your_target_folder = conf.your_target_folder
+print('docha (d), tati (нажать любую клавишу):')
+who = input()
+if who == 'd':
+    your_target_folder = conf.your_target_folder_docha
+else:
+    your_target_folder = conf.your_target_folder
 
 
 def list_of_files(your_target_folder):
