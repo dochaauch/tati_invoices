@@ -4,7 +4,13 @@ import conf
 import shutil
 
 
-your_target_folder = conf.your_target_folder
+print('docha (d), tati (нажать любую клавишу):')
+who = input()
+if who == 'd':
+    your_target_folder = conf.your_target_folder_docha
+else:
+    your_target_folder = conf.your_target_folder
+
 
 with open(f'{your_target_folder}/folder.txt', 'r') as f:
     folder_names = f.readlines()

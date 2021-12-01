@@ -6,8 +6,13 @@ import re
 from openpyxl.comments import Comment
 import hours_config
 
+print('docha (d), tati (нажать любую клавишу):')
+who = input()
+if who == 'd':
+    your_target_folder = hours_config.your_target_folder_docha
+else:
+    your_target_folder = hours_config.your_target_folder
 
-target_folder = hours_config.your_target_folder
 
 
 def define_of_files(your_target_folder):
@@ -31,7 +36,7 @@ def define_of_files(your_target_folder):
     return fs_file, stma_file, rmtp_file
 
 
-fs_file, stema_file, rmtp_file = define_of_files(target_folder)
+
 
 
 def list_of_files(your_target_folder):
@@ -81,7 +86,7 @@ def processing_comments(cell, comm, stema_time_i, stema_name):
                 cell.fill = openpyxl.styles.PatternFill(start_color='FFC7CE', fill_type="solid")
 
 
-def write_hours_to_summary(week_hours, column_day):
+def write_hours_to_summary(week_hours, column_day, stema_file):
     stema_book = openpyxl.load_workbook(filename=stema_file)
     stema_sheets = stema_book.sheetnames[0]
     stema_sh = stema_book[stema_sheets]
@@ -112,11 +117,12 @@ def write_hours_to_summary(week_hours, column_day):
 
 
 def main():
-    week_files, week_list = list_of_files(target_folder)
+    fs_file, stema_file, rmtp_file = define_of_files(your_target_folder)
+    week_files, week_list = list_of_files(your_target_folder)
     print(week_list)
     for cnt_f, w_file in enumerate(week_files):
         week_hours = read_week_file(w_file)
-        write_hours_to_summary(week_hours, 2 + cnt_f * 7)
+        write_hours_to_summary(week_hours, 2 + cnt_f * 7, stema_file)
 
 
 if __name__ == "__main__":
