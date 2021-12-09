@@ -12,7 +12,9 @@ url = r'https://etaotlus.politsei.ee/ltr/#!/login'
 
 driver = webdriver.Chrome()
 driver.get(url)
-#time.sleep(10)
+driver.implicitly_wait(300)
+sec_wait = 20
+wait = WebDriverWait(driver, sec_wait)
 
 #работает, но не кликабельно
 #smart_id_button = driver.find_element(By.XPATH, "//*[name()='use' and @*='#icon-smart-id']")
@@ -25,25 +27,15 @@ driver.get(url)
 #        Smart-ID
 #    </span>
 #</a>
-time.sleep(3)
+
+# кнопка sisene на первой страницу
 sisene_button = driver.find_element(By.XPATH, '//*[@id="etk_main_view"]/section/div[1]/div/div/form/div/div/div/button')
 sisene_button.click()
 
-time.sleep(3)
+#переход на логин со smart id
 choice_buttons = driver.find_elements(By.CLASS_NAME, "c-tab-login__nav-link")
-#WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH,
-#        "//*[name()='svg:image' and starts-with(@class, 'holder') and contains(@xlink:href, 'some')]"))).click()
-
-#smart_id_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH,
-#        '//div[@class="icon icon-smart-id"]/*[name()="svg"]'))).click()
-
-
-#print(choice_buttons)
-#print('Перейти на smart-ID? Да - 1 ')
-#go_to_smart_id = input('')
-#if go_to_smart_id == '1':
-#    choice_buttons[2].click()
 choice_buttons[2].click()
+
 
 minu_isikukood = driver.find_element(By.ID, 'sid-personal-code')
 minu_isikukood.send_keys(lc.minu_isikukood)
@@ -52,12 +44,8 @@ time.sleep(3)
 
 
 #uus_taotlus
-WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH,
+uus_taotlus_button = wait.until(EC.element_to_be_clickable((By.XPATH,
                                                             '//*[@id="main-top-container"]/div/button'))).click()
-#uus_taotlus_button = driver.find_element(By.CLASS_NAME, 'ng-binding ng-scope')
-#uus_taotlus_button.click()
-
-time.sleep(2)
 
 
 tooandja_registrikood = driver.find_element(By.NAME, 'identifier')
@@ -65,8 +53,7 @@ tooandja_registrikood.send_keys(lc.tooandja_registrikood)
 
 tooandja_registrikood.send_keys(Keys.ENTER)
 
-tegevusala = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.TAG_NAME, 'select')))
-#tegevusala = driver.find_element(By.TAG_NAME, 'select')
+tegevusala = wait.until(EC.element_to_be_clickable((By.TAG_NAME, 'select')))
 tegevusala.click()
 Select(tegevusala).select_by_visible_text(lc.tegevusala)
 
@@ -85,10 +72,110 @@ minu_telefon.send_keys(lc.minu_telefon)
 minu_email = driver.find_element(By.NAME, 'authorizedPersonEmail')
 minu_email.send_keys(lc.minu_email)
 
-print('Загрузи доверенность и нажми тут 1. Кнопку "продолжать" на сайте не нажимать: ')
-jatka_button_choise = input()
-if jatka_button_choise == '1':
-    jatka_button = driver.find_element(By.XPATH, '//*[@id="etk_main_view"]/div/form/div/div[2]/div[2]/div/button')
-    jatka_button.click()
+#TODO проверить загрузку доверенности. выглядит странно.
+#грузим доверенность, время на появление кнопки Kustuta до 120 секунд
+sec_wait = 120
+wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'btn btn-danger btn-xs pull-right')))
+sec_wait = 20
+
+#print('Загрузи доверенность и нажми тут 1. Кнопку "продолжать" на сайте не нажимать, переход будет автоматом: ')
+#jatka_button_choise = input()
+#if jatka_button_choise == '1':
+#    jatka_button = driver.find_element(By.XPATH, '//*[@id="etk_main_view"]/div/form/div/div[2]/div[2]/div/button')
+#    jatka_button.click()
 
 
+#переходим к загрузке данных человека
+#TODO сделать базу в экселе и конвертировать ее в словарь.
+database_from_excel = {'firstName': 'YURII',
+                       'lastName': 'BENDER',
+                       'personCode': '37308220092',
+                       'birthCountry': 'Ukraina',
+                       'citizenship': 'Ukraina',
+                       'otherCitizenship': '',
+                       'email': 'tanja.svcentre@gmail.com',
+                       'phoneNumber': '+37253985689',
+                       'basisOfStay': 'viisa alusel',
+                       'addressType1': 'Eesti'}
+
+#TODO загрузить фотографию
+wait_sec = 120
+wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'btn btn-default btn-outline ng-scope')))
+wait_sec = 20
+
+tootaja_first_name = driver.find_elemet(By.NAME, 'firstName')
+tootaja_first_name.send_keys(database_from_excel['firstName'])
+
+tootaja_last_name = driver.find_element(By.NAME, 'lastName')
+tootaja_last_name.send_keys(database_from_excel['lastName'])
+
+tootaja_isikukood = driver.find_element(By.NAME, 'personCode')
+tootaja_isikukood.send_keys(database_from_excel['personCode'])
+
+#TODO дата рождения и пол
+
+tootaja_countryBirth = wait.until(EC.element_to_be_clickable((By.NAME, 'birthCountry')))
+tootaja_countryBirth.click()
+Select(tootaja_countryBirth).select_by_visible_text(database_from_excel['birthCountry'])
+
+tootaja_citizenship = wait.until(EC.element_to_be_clickable((By.NAME, 'citizenship')))
+tootaja_citizenship.click()
+Select(tootaja_citizenship).select_by_visible_text(database_from_excel['citizenship'])
+
+tootaja_other_citizenship = wait.until(EC.element_to_be_clickable((By.NAME, 'otherCitizenship')))
+tootaja_other_citizenship.click()
+Select(tootaja_other_citizenship).select_by_visible_text(database_from_excel['otherCitizenship'])
+
+tootaja_email = driver.find_element(By.NAME, 'email')
+tootaja_email.send_keys(database_from_excel['email'])
+
+tootaja_phone = driver.find_element(By.NAME, 'phoneNumber')
+tootaja_phone.send_keys(database_from_excel['phoneNumber'])
+
+tootaja_basisOfStay = wait.until(EC.element_to_be_clickable((By.NAME, 'basisOfStay')))
+tootaja_basisOfStay.click()
+Select(tootaja_basisOfStay).select_by_visible_text(database_from_excel['basisOfStay'])
+
+eesti_adress_country = driver.find_element(By.ID, 'addressType1')
+eesti_adress_country.click()
+
+#TODO заполнить нормально
+aadress_string = driver.find_element(By.XPATH, '//*[@id="geoservice"]/input')
+
+tootaja_postal = driver.find_element(By.NAME, 'localPostalCode')
+
+tootaja_doc = driver.find_element(By.NAME, 'TravelDoc')
+
+tootaja_doc_country = wait.until(EC.element_to_be_clickable((By.NAME, 'travelDocumentIssueCountry')))
+tootaja_doc_country.click()
+
+tootaja_doc_date = driver.find_element(By.NAME, 'travelDocumentIssueDate')
+
+tootaja_doc_until = driver.find_element(By.NAME, 'travelDocumentValidUntil')
+
+
+#TODO загрузить паспорт
+wait_sec = 120
+wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'btn btn-danger ng-scope')))
+wait_sec = 20
+
+tootaja_too_address = driver.find_element(By.XPATH, '//*[@id="geoservice"]/input')
+
+tootaja_too_indeks = driver.find_element(By.NAME, 'localPostalCode')
+
+tootaja_too_type = wait.until(EC.element_to_be_clickable((By.NAME, 'tyoe')))
+tootaja_too_type.click()
+
+tootaja_palk = driver.find_element(By.NAME, 'grossSalary')
+
+tootaja_kuus = wait.until(EC.element_to_be_clickable((By.NAME, 'grossSalaryUnit')))
+tootaja_kuus.click()
+
+tootaja_occupation = wait.until(EC.element_to_be_clickable((By.NAME, 'occupation')))
+tootaja_occupation.click()
+
+#TODO загрузить договор
+tootaja_contract = wait.until(EC.presence_of_element_located((By.NAME, 'contractDocument')))
+tootaja_contract.send_keys(r'C:\Users\docha\OneDrive\Leka\PPA LTR\taotlus.pdf')
+
+tootaja_start = driver.find_element(By.NAME, 'workStartDate')

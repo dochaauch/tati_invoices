@@ -9,6 +9,7 @@ from collections import defaultdict, OrderedDict
 import openpyxl
 import os
 import config_pdf
+import datetime
 
 
 #в модуле fillpdfs.py изменить строку 32 с
@@ -46,20 +47,24 @@ def fill_pdf_form(wb_, sheet_, origin_pdf, new_pdf, file_name, all_records, row_
         row_start = row_start
         row_last = row_last + 1
     for row_nr in range(row_start + 1, row_last + 1):
-        date = sheet.cell(row=row_nr, column=4).value
+        date_ = sheet.cell(row=row_nr, column=4).value
         a = 0
-        if date and not isinstance(date, int):
-            a = len(date)
+        if date_ and not isinstance(date_, int):
+            print(date_, type(date_))
+            a = len(str(date_))
         if sheet.cell(row=row_nr, column=1).value != '#VALUE!' and a > 7:
             for col_nr in range(1, sheet.max_column + 1):
                 head = sheet.cell(row=1, column=col_nr).value
                 value = sheet.cell(row=row_nr, column=col_nr).value
+                print(value, type(value))
                 if value is None and head not in ['Sugu 3', 'Suhe 3', 'Sugu 2', 'Suhe 2']:
                     value = ''
                 data_dict_[head] = value
                 # print(head, value)
             # pprint.pprint(data_dict)
-            date_name = date.split('.')[2] + '_' + date.split('.')[1]
+
+            #date_name = date_.strftime('%Y-%m')
+            date_name = date_.split('.')[2][2:] + '-' + date_.split('.')[1]
             name = sheet.cell(row=row_nr, column=2).value
             family_name = sheet.cell(row=row_nr, column=3).value
 
