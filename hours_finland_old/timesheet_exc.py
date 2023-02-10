@@ -5,8 +5,7 @@ import re
 from openpyxl.comments import Comment
 from win32com.client import Dispatch
 #python -m pip install pywin32
-import hours_config
-
+from hours_finland_old import hours_config
 
 print('docha (d), tati (нажать любую клавишу):')
 who = input()

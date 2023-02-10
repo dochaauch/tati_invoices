@@ -13,6 +13,7 @@ else:
     your_target_folder = conf.your_target_folder
 
 
+
 def list_of_files(your_target_folder):
     pdf_files = []
     for dirpath, _, filenames in os.walk(your_target_folder):
@@ -31,7 +32,7 @@ folder_text = ''
 
 for files_address in pdf_files:
     nr_of_doc = 'notext'
-    inv_ship_name = ''
+    inv_ship_name = 'object'
     print(files_address)
     pdfFileObj = open(files_address, 'rb')
     pdfReader = PyPDF2.PdfFileReader(pdfFileObj, strict=False)
@@ -55,23 +56,38 @@ for files_address in pdf_files:
                     nr_of_doc = nr_of_doc.replace('/', '_')
                     if nr_of_doc.endswith('A'):
                         ship_name = akt_ship.search(text)
+
                         ship_name = ship_name.group(1).strip()
+
+                        if ('Ведомость' in ship_name) or ('внутренние' in ship_name):
+                            ship_name = 'object'
+
                         fold_name = fr'{nr_of_doc[:-1]}'
 
                 else:
                     nr_of_doc = nr_of_doc_inv.search(text)
                     nr_of_doc = nr_of_doc.group(1)
                     nr_of_doc = nr_of_doc.replace('/', '_')
+                    fold_name = fr'{nr_of_doc}'
+
 
                     ship_name = inv_ship.search(text)
-                    ship_name = ship_name.group(1).strip()
-                    fold_name = fr'{nr_of_doc}'
+                    if ship_name:
+                        ship_name = ship_name.group(1).strip()
+                    if ship_name is None:
+                        ship_name = 'object'
+                    elif 'внутренние' in ship_name:
+                        ship_name = 'object'
+
+
+
+
             except (Exception, ):
                 pass
 
         try:
             os.mkdir(f'{your_target_folder}/{fold_name} {ship_name}')
-            print(fold_name, ship_name)
+            print(f'{your_target_folder}/{fold_name} {ship_name}')
             folder_text += f'{fold_name} {ship_name}' + '\n'
         except FileExistsError:
             pass
@@ -79,6 +95,7 @@ for files_address in pdf_files:
             output_filename = your_target_folder + '/{}.txt'.format(nr_of_doc)
         else:
             output_filename = your_target_folder + '/{} {}/{}.pdf'.format(fold_name, ship_name, nr_of_doc)
+
 
         with open(output_filename, 'wb') as out:
             try:

@@ -1,5 +1,5 @@
 .idea/
 __pycache__/
-test.py
-lyhiajaline_config.py
-geckodriver.log
+elamisluba/test.py
+elamisluba/lyhiajaline_config.py
+elamisluba/geckodriver.log

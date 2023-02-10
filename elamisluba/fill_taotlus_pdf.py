@@ -3,14 +3,11 @@
 
 
 from fillpdf import fillpdfs
-import pprint
 import csv
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict
 import openpyxl
 import os
 import config_pdf
-import datetime
-
 
 #в модуле fillpdfs.py изменить строку 32 с
 #data_dict = {}
@@ -56,7 +53,7 @@ def fill_pdf_form(wb_, sheet_, origin_pdf, new_pdf, file_name, all_records, row_
             for col_nr in range(1, sheet.max_column + 1):
                 head = sheet.cell(row=1, column=col_nr).value
                 value = sheet.cell(row=row_nr, column=col_nr).value
-                print(value, type(value))
+                #print(value, type(value))
                 if value is None and head not in ['Sugu 3', 'Suhe 3', 'Sugu 2', 'Suhe 2']:
                     value = ''
                 data_dict_[head] = value

@@ -40,6 +40,7 @@ with open(f'{your_target_folder}/folder.txt', 'r') as f:
         if list_of_pdfs:
             for _pdf in list_of_pdfs:
                 vedom = fr'{your_target_folder}/{folder_name}/{_pdf}'
+                print(vedom)
                 mergeFile.append(PyPDF2.PdfFileReader(vedom, 'rb'))
                 os.chmod(vedom, stat.S_IWRITE)
             print(folder_name, 'количество ведомостей: ', len(list_of_pdfs))

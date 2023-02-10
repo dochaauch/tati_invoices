@@ -1,7 +1,6 @@
 import openpyxl
 import xlrd
 import os
-import pprint
 import re
 from openpyxl.comments import Comment
 import hours_config
@@ -90,6 +89,7 @@ def read_every_page_week_file(week_file):
             less_hours = 0
             if rate.value != 'FS' and rate.value and start_hour and end_hour:
                 work_hour = calculate_hours(start_hour, end_hour, week_nr, day_name, fs_name)
+                #print(type(work_hour), type(rate.value), rate.value, week_file)
                 less_hours = work_hour - rate.value
                 if work_hour != rate.value:
                     print('+++ часы не сходятся с расчетом +++'.center(36), week_nr, day_name, fs_name.value.ljust(30),

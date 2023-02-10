@@ -4,7 +4,7 @@ import os
 import pprint
 import re
 from openpyxl.comments import Comment
-import hours_config
+from hours_finland_old import hours_config
 
 print('docha (d), tati (нажать любую клавишу):')
 who = input()

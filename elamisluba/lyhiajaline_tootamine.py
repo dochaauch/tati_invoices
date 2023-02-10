@@ -8,6 +8,26 @@ from selenium.webdriver.support import expected_conditions as EC
 import lyhiajaline_config as lc
 
 
+def get_element(path_type, element_path, custom_time_out=None,):
+    """
+    :param path_type: тип локатора
+    :param element_path: путь элемента
+    :return:
+    """
+    __type = {
+        'xpath': By.XPATH,
+        'css': By.CSS_SELECTOR,
+        'id': By.ID,
+        'class': By.CLASS_NAME
+    }
+    if custom_time_out is not None:
+        time_out = custom_time_out
+    else:
+        time_out = 20
+
+    return WebDriverWait(driver, time_out).until(EC.presence_of_element_located((__type.get(path_type), element_path)))
+
+
 url = r'https://etaotlus.politsei.ee/ltr/#!/login'
 
 driver = webdriver.Chrome()
@@ -44,9 +64,9 @@ time.sleep(3)
 
 
 #uus_taotlus
-uus_taotlus_button = wait.until(EC.element_to_be_clickable((By.XPATH,
-                                                            '//*[@id="main-top-container"]/div/button'))).click()
-
+#uus_taotlus_button = wait.until(EC.element_to_be_clickable((By.XPATH,
+#                                                            '//*[@id="main-top-container"]/div/button'))).click()
+uus_taotlus_button = get_element(By.XPATH, '//*[@id="main-top-container"]/div/button',30).click()
 
 tooandja_registrikood = driver.find_element(By.NAME, 'identifier')
 tooandja_registrikood.send_keys(lc.tooandja_registrikood)
@@ -73,10 +93,11 @@ minu_email = driver.find_element(By.NAME, 'authorizedPersonEmail')
 minu_email.send_keys(lc.minu_email)
 
 #TODO проверить загрузку доверенности. выглядит странно.
-#грузим доверенность, время на появление кнопки Kustuta до 120 секунд
-sec_wait = 120
-wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'btn btn-danger btn-xs pull-right')))
-sec_wait = 20
+#грузим доверенность, время на появление кнопки Kustuta до 600 секунд
+
+get_element(By.CLASS_NAME, 'btn btn-danger btn-xs pull-right', 600)
+#wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'btn btn-danger btn-xs pull-right')))
+
 
 #print('Загрузи доверенность и нажми тут 1. Кнопку "продолжать" на сайте не нажимать, переход будет автоматом: ')
 #jatka_button_choise = input()
@@ -99,9 +120,10 @@ database_from_excel = {'firstName': 'YURII',
                        'addressType1': 'Eesti'}
 
 #TODO загрузить фотографию
-wait_sec = 120
-wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'btn btn-default btn-outline ng-scope')))
-wait_sec = 20
+
+get_element(By.CLASS_NAME, 'btn btn-default btn-outline ng-scope', 600)
+#wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'btn btn-default btn-outline ng-scope')))
+
 
 tootaja_first_name = driver.find_elemet(By.NAME, 'firstName')
 tootaja_first_name.send_keys(database_from_excel['firstName'])
@@ -155,9 +177,10 @@ tootaja_doc_until = driver.find_element(By.NAME, 'travelDocumentValidUntil')
 
 
 #TODO загрузить паспорт
-wait_sec = 120
-wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'btn btn-danger ng-scope')))
-wait_sec = 20
+
+get_element(By.CLASS_NAME, 'btn btn-danger ng-scope', 600)
+#wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'btn btn-danger ng-scope')))
+
 
 tootaja_too_address = driver.find_element(By.XPATH, '//*[@id="geoservice"]/input')
 

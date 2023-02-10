@@ -1,11 +1,9 @@
-import pprint
 import datetime
 import pandas as pd
 from textwrap import wrap
 import re
-from sys import argv
 import conf_pank
-from datetime import date, timedelta
+from datetime import date
 from pyautogui import typewrite
 
 
