@@ -17,11 +17,10 @@ def choose_user():
 
 def list_of_files(your_target_folder):
     pdf_files = []
-    for dirpath, _, filenames in os.walk(your_target_folder):
-        for items in filenames:
-            file_full_path = os.path.abspath(os.path.join(dirpath, items))
-            if file_full_path.lower().endswith('.pdf'):
-                pdf_files.append(file_full_path)
+    for items in os.listdir(your_target_folder):
+        file_full_path = os.path.abspath(os.path.join(your_target_folder, items))
+        if os.path.isfile(file_full_path) and file_full_path.lower().endswith('.pdf'):
+            pdf_files.append(file_full_path)
     return pdf_files
 
 
@@ -90,7 +89,7 @@ def processing(target_folder):
                 ship_name = extract_ship_name(text)
 
             output_filename, folder_text = create_subfolder(target_folder,
-                                               fold_name, ship_name, folder_text, nr_of_doc)
+                                               fold_name, translateString(ship_name), folder_text, nr_of_doc)
 
             write_to_pdf(output_filename, pdf_writer)
     return folder_text
@@ -121,10 +120,18 @@ def write_to_pdf(output_filename, pdf_writer):
 
 def note_folder_to_be_deleted_to_txt(folder_text, your_target_folder):
     print(folder_text)
-    with open(fr'{your_target_folder}/folder.txt', 'w') as f:
-        f.write(folder_text)
+    with open(fr'{your_target_folder}/folder.txt', 'w', encoding="utf-8") as f:
+        f.write(translateString(folder_text))
 
 
+def translateString(our_string):
+    special_char_map = {ord('ä'): 'a', ord('ü'): 'u', ord('ö'): 'o', ord('õ'): 'o',
+                        ord('ž'): 'z', ord('š'): 's',
+                        ord('Ä'): 'A', ord('Ü'): 'U', ord('Ö'): 'O', ord('Õ'): 'O',
+                        ord('Z'): 'Z', ord('Š'): 'S', ord('’'): '',
+                        ord('Ł'): 'L',
+                        }
+    return our_string.translate(special_char_map)
 
 def main():
     your_target_folder = choose_user()
